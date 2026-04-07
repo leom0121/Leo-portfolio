@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leo Murakami | Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&family=Noto+Sans+JP:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- デザイン変数 --- */
+        :root {
+            --bg-color: #F8F5F0; /* デザート（淡いベージュ） */
+            --text-color: #111111;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1); /* スムーズなアニメーション */
+        }
+
+        /* --- 基本スタイル --- */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            margin: 0; padding: 0; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; /* 文字を滑らかに */
+        }
+
+        /* --- スクロールアニメーション用 --- */
+        section {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 1.5s var(--ease), transform 1.5s var(--ease);
+        }
+        section.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- ナビゲーション（反転仕様） --- */
+        nav {
+            padding: 40px clamp(20px, 5vw, 60px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+            mix-blend-mode: difference; /* 画像と重なると色が反転 */
+            color: #eeeeee; /* 反転用のベースカラー */
+        }
+        .logo { font-weight: 900; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .nav-links { font-size: 0.75rem; letter-spacing: 0.2em; font-weight: 700; }
+
+        /* --- ヒーローセクション（アウトライン・文字間最終調整） --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10%;
+        }
+        .hero h1 {
+            font-size: clamp(3rem, 15vw, 12rem); /* 画面幅に合わせて伸縮 */
+            font-weight: 900;
+            line-height: 0.85; /* タイトな行間 */
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.02em; /* ゆとりのある文字間 */
+        }
+        
+        /* 💡 修正ポイント：縁をさらに極太（2.5px）に */
+        .hero h1 span.outline {
+            color: var(--bg-color); /* 中身を背景色で塗る */
+            text-shadow: 
+                2.5px 2.5px 0 var(--text-color),
+                -2.5px -2.5px 0 var(--text-color),
+                2.5px -2.5px 0 var(--text-color),
+                -2.5px 2.5px 0 var(--text-color),
+                2.5px 0px 0 var(--text-color),
+                -2.5px 0px 0 var(--text-color),
+                0px 2.5px 0 var(--text-color),
+                0px -2.5px 0 var(--text-color); /* 8方向に影を飛ばして太い縁を作る */
+        }
+
+        /* --- 変則ワークスセクション（エディトリアルレイアウト） --- */
+        .works {
+            padding: 0 5vw 200px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr); /* 12カラムベース */
+            gap: 120px 0;
+        }
+
+        .work-item {
+            position: relative;
+            transition: transform 0.8s var(--ease);
+        }
+
+        /* 画像コンテナ */
+        .img-container {
+            overflow: hidden;
+            line-height: 0;
+            font-size: 0;
+            background: none;
+        }
+
+        .work-item img {
+            width: 101%; /* 隙間対策 */
+            height: auto;
+            display: block;
+            margin-bottom: -1px; /* 隙間対策 */
+            transition: transform 1.5s var(--ease);
+        }
+        /* ホバー時のズームエフェクト */
+        .work-item:hover img { transform: scale(1.05); }
+
+        /* 作品タイトル */
+        .work-title {
+            margin-top: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        /* --- 変則配置レイアウト（hu-weee風） --- */
+        .item-1 { grid-column: 1 / 8; width: 90%; }
+        .item-2 { grid-column: 9 / 12; margin-top: 150px; width: 100%; }
+        .item-3 { grid-column: 4 / 10; margin-top: 50px; width: 85%; }
+        .item-4 { grid-column: 2 / 6; margin-top: -50px; width: 100%; }
+        .item-5 { grid-column: 7 / 12; margin-top: 100px; width: 90%; }
+        .item-6 { grid-column: 2 / 11; margin-top: 150px; width: 100%; }
+        .item-7 { grid-column: 1 / 5; margin-top: 50px; width: 100%; }
+        .item-8 { grid-column: 7 / 13; margin-top: -80px; width: 80%; }
+        .item-9 { grid-column: 5 / 9; margin-top: 100px; width: 100%; }
+        .item-10 { grid-column: 3 / 12; margin-top: 150px; width: 100%; }
+
+        /* タブレット・スマホ対応 */
+        @media (max-width: 768px) {
+            .grid { display: block; }
+            .work-item { grid-column: auto !important; width: 100% !important; margin-top: 80px !important; }
+            /* スマホでは縁を少し細く調整 */
+            .hero h1 span.outline {
+                text-shadow: 1.5px 1.5px 0 var(--text-color), -1.5px -1.5px 0 var(--text-color), 1.5px -1.5px 0 var(--text-color), -1.5px 1.5px 0 var(--text-color);
+            }
+        }
+
+        /* --- フッター --- */
+        footer {
+            padding: 150px 20px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+        .contact-mail {
+            font-size: clamp(1.2rem, 5vw, 3rem);
+            font-weight: 900;
+            color: var(--text-color);
+            text-decoration: none;
+            letter-spacing: -0.03em;
+            transition: opacity 0.3s ease;
+        }
+        .contact-mail:hover { opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">LEO MURAKAMI'S PORTFOLIO</div>
+        <div class="nav-links">WORKS</div>
+    </nav>
+
+    <section class="hero visible">
+        <h1>LEO<br><span class="outline">MURAKAMI</span></h1>
+        <p style="margin-top: 2.5rem; font-weight: 300; letter-spacing: 0.1em; color: #666;">Graphic Designs</p>
+    </section>
+
+    <section class="works">
+        <div class="grid">
+            <div class="work-item item-1">
+                <div class="img-container"><img src="work1.png" alt=""></div>
+                <div class="work-title">Flyer Design</div>
+            </div>
+            <div class="work-item item-2">
+                <div class="img-container"><img src="work2.png" alt=""></div>
+                <div class="work-title">Flyer Design</div>
+            </div>
+            <div class="work-item item-3">
+                <div class="img-container"><img src="work3.jpg" alt=""></div>
+                <div class="work-title">Public Performance Concept Design</div>
+            </div>
+            <div class="work-item item-4">
+                <div class="img-container"><img src="work4.png" alt=""></div>
+                <div class="work-title">Paws Pal Brand Design</div>
+            </div>
+            <div class="work-item item-5">
+                <div class="img-container"><img src="work5.png" alt=""></div>
+                <div class="work-title">Paws Pal Brand Design</div>
+            </div>
+            <div class="work-item item-6">
+                <div class="img-container"><img src="work6.png" alt=""></div>
+                <div class="work-title">Paws Pal Brand Design</div>
+            </div>
+            <div class="work-item item-7">
+                <div class="img-container"><img src="work7.png" alt=""></div>
+                <div class="work-title">Thyme Pamphlet Design</div>
+            </div>
+            <div class="work-item item-8">
+                <div class="img-container"><img src="work8.png" alt=""></div>
+                <div class="work-title">Thyme Pamphlet Design</div>
+            </div>
+            <div class="work-item item-9">
+                <div class="img-container"><img src="work9.png" alt=""></div>
+                <div class="work-title">Thyme Pamphlet Design</div>
+            </div>
+            <div class="work-item item-10">
+                <div class="img-container"><img src="work10.png" alt=""></div>
+                <div class="work-title">Thyme Pamphlet Design</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div style="margin-bottom: 30px; font-size: 0.8rem; letter-spacing: 0.3em; color: #888;">GET IN TOUCH</div>
+        <a href="mailto:murakami.leo3717@gmail.com" class="contact-mail">murakami.leo3717@gmail.com</a>
+        <div style="margin-top: 100px; font-size: 0.7rem; color: #bbb; letter-spacing: 0.1em;">&copy; 2026 LEO MURAKAMI. ALL RIGHTS RESERVED.</div>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 }); // 10%見えたら表示
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
